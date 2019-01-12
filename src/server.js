@@ -284,6 +284,6 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'static/index.html'))
 })
 
-server.listen(3001, () => {
-    console.log('My app listening on port 3001!')
+server.listen(process.env.PORT || 3001, () => {
+    console.log('Teraza app start!')
 })

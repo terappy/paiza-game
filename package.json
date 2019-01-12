@@ -2,10 +2,11 @@
   "name": "paiza-game",
   "version": "1.0.0",
   "description": "test 3d game",
-  "main": "src/index.js",
+  "main": "src/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint src/*.js"
+    "lint": "eslint src/*.js",
+    "start": "node src/server.js"
   },
   "repository": {
     "type": "git",
