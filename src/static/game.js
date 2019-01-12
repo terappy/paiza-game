@@ -127,8 +127,8 @@ $('#canvas-2d').on('touchmove', (event) => {
     movement.left = false
     Array.from(event.touches).forEach((touch) => {
         const startTouch = touches[touch.identifier]
-        movement.right |= touch.pageX - startTouch.pageX > 20
-        movement.left |= touch.pageX - startTouch.pageX < -20
+        movement.right |= touch.pageX - startTouch.pageX > 25
+        movement.left |= touch.pageX - startTouch.pageX < -25
     })
     socket.emit('movement', movement)
     event.preventDefault()
