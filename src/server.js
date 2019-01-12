@@ -134,10 +134,11 @@ class Player extends GameObject {
     remove() {
         delete players[this.id]
         io.to(this.socketId).emit('dead')
+        io.sockets.emit('message', this.nickname + 'さんがやられました。。。')
     }
 
     toJSON() {
-        return Object.assign(super.toJSON(), { health: this.health, maxHealth: this.maxHealth, socketId: this.socketId, point: this.point, nickname: this.nickname })
+        return Object.assign(super.toJSON(), { health: this.health, maxHealth: this.maxHealth, socketId: this.socketId, point: this.point, nickname: this.nickname, bullets: this.bullets })
     }
 }
 
@@ -162,7 +163,7 @@ class BotPlayer extends Player {
             if (!this.move(4)) {
                 this.angle = Math.random() * Math.PI * 2
             }
-            if (Math.random() < 0.2) {
+            if (Math.random() < 0.08) {
                 this.shoot()
             }
         }, 1000 / 30)
@@ -174,7 +175,7 @@ class BotPlayer extends Player {
         setTimeout(() => {
             const bot = new BotPlayer({ nickname: this.nickname })
             players[bot.id] = bot
-        }, 3000)
+        }, 5000)
     }
 }
 
@@ -205,11 +206,14 @@ let bullets = {}
 let walls = createWalls()
 
 // bot生成
-const bot = new BotPlayer({ nickname: 'bot' })
-players[bot.id] = bot
+for (let i = 0; i < 2; i++) {
+    const bot = new BotPlayer({ nickname: 'bot' + (i + 1) })
+    players[bot.id] = bot
+}
 
 io.on('connection', (socket) => {
-    console.log('client: ' + socket.id + ' connected')
+    // console.log('client: ' + socket.id + ' connected')
+    io.sockets.emit('count', Object.keys(io.sockets.sockets).length)
     let player = null
 
     // ゲーム開始時の処理
@@ -219,6 +223,7 @@ io.on('connection', (socket) => {
             nickname: config.nickname
         })
         players[player.id] = player
+        io.sockets.emit('message', this.nickname + 'さんが参戦しました！')
     })
 
     // プレイヤー移動処理
@@ -235,10 +240,14 @@ io.on('connection', (socket) => {
 
     // 通信終了処理
     socket.on('disconnect', () => {
-        console.log('client: ' + socket.id + ' disconnected')
-        /** プレイヤーが全てlogoutしていれば壁を再生成する */
-        if (Object.keys(io.sockets.sockets).length === 0) {
+        // console.log('client: ' + socket.id + ' disconnected')
+        /** 同時接続数 */
+        const playersNum = Object.keys(io.sockets.sockets).length
+        // プレイヤーが全てlogoutしていれば壁を再生成する
+        if (playersNum === 0) {
             walls = createWalls()
+        } else {
+            io.sockets.emit('count', playersNum)
         }
 
         if (!player) { return }

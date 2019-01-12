@@ -5,15 +5,51 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <style type="text/css">
+        table,
+        td,
+        th {
+            border: 2px #2b2b2b solid;
+            padding: 5px;
+        }
+    </style>
 </head>
 
 <body style="display: flex; flex-direction: column; width: 100%; height: 100%; margin: 0;">
-    <div>Teraza Battle Field</div>
+    <div>News: <span id='news'></span></div>
+    <div>現在のPlayer数: <span id='count'>0</span>人</div>
     <div style="flex: 1 1; position: relative; overflow:hidden;">
         <div id="start-screen" style="width:100%; height:100%; display: flex; align-items: center; position:absolute; z-index:10;background-color:rgba(128,128,128,0.5);">
             <div style="text-align: center; width: 100%; font-size: xx-large;">
+                <div id="message" style="margin-bottom: 30px">Welcome to Teraza Game!</div>
                 <input type="text" name="nickname" id="nickname" placeholder="Your nickname" autofocus><br /><br />
-                <button style="font-size: xx-large;" id="start-button">Start</button>
+                <button style="font-size: xx-large; background-color: darkorange; color: whitesmoke" id="start-button">Start</button>
+                <table style="text-align: center;margin: auto; margin-top: 30px">
+                    <tr>
+                        <th>操作</th>
+                        <th>動作</th>
+                    </tr>
+                    <tr>
+                        <td>タッチ</td>
+                        <td>前進＆弾発射</td>
+                    </tr>
+                    <tr>
+                        <td>スライド</td>
+                        <td>方向転換</td>
+                    </tr>
+                    <tr>
+                        <td>方向キーの上・下</td>
+                        <td>前進・後退</td>
+                    </tr>
+                    <tr>
+                        <td>方向キーの左右</td>
+                        <td>方向転換</td>
+                    </tr>
+                    <tr>
+                        <td>スペース</td>
+                        <td>弾発射</td>
+                    </tr>
+                </table>
             </div>
         </div>
         <canvas id="canvas-2d" width="1000" height="1000" style="position:absolute;width:100%;height:100%;object-fit:contain;"></canvas>

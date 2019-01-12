@@ -51,14 +51,18 @@ socket.on('state', (players, bullets, walls) => {
     Object.values(players).forEach((player) => {
         context.save()
         context.font = '20px Bold Arial'
-        context.fillText(player.nickname, player.x, player.y + player.height + 25)
+        context.fillText(player.nickname, player.x, player.y + player.height + 30)
         context.font = '10px Bold Arial'
+        context.textAlign = 'right'
+        context.fillText('⚫️'.repeat(3), player.x + player.width + 50, player.y + player.height - 10)
+        context.fillText('🔵'.repeat(3 - Object.keys(player.bullets).length), player.x + player.width + 50, player.y + player.height - 10)
+        context.textAlign = 'left'
         context.fillStyle = 'gray'
         context.fillText('🖤'.repeat(player.maxHealth), player.x, player.y + player.height + 10)
         context.fillStyle = 'red'
         context.fillText('❤️'.repeat(player.health), player.x, player.y + player.height + 10)
         context.translate(player.x + player.width / 2, player.y + player.height / 2)
-        context.rotate(player.angle)
+        context.rotate(player.angle + (90 * Math.PI / 180))
         context.drawImage(playerImage, 0, 0, playerImage.width, playerImage.height, -player.width / 2, -player.height / 2, player.width, player.height)
         context.restore()
 
@@ -78,13 +82,27 @@ socket.on('state', (players, bullets, walls) => {
     })
 
     Object.values(walls).forEach((wall) => {
-        context.fillStyle = 'black'
+        context.fillStyle = 'gray'
         context.fillRect(wall.x, wall.y, wall.width, wall.height)
     })
 })
 
-socket.on('dead', () => {
+socket.on('dead', (player) => {
+    $('#message').text('Game Over L(ﾟ□ﾟ)」ｵｰﾏｲｶﾞ!')
     $('#start-screen').show()
+})
+
+let newsTimeoutID = null
+socket.on('message', (message) => {
+    clearTimeout(newsTimeoutID)
+    $('#news').text(message)
+    newsTimeoutID = setTimeout(() => {
+        $('#news').text('')
+    }, 8000)
+})
+
+socket.on('count', (count) => {
+    $('#count').text(count)
 })
 
 // スマホ設定
@@ -109,8 +127,8 @@ $('#canvas-2d').on('touchmove', (event) => {
     movement.left = false
     Array.from(event.touches).forEach((touch) => {
         const startTouch = touches[touch.identifier]
-        movement.right |= touch.pageX - startTouch.pageX > 30
-        movement.left |= touch.pageX - startTouch.pageX < -30
+        movement.right |= touch.pageX - startTouch.pageX > 20
+        movement.left |= touch.pageX - startTouch.pageX < -20
     })
     socket.emit('movement', movement)
     event.preventDefault()
