@@ -1,6 +1,7 @@
 'use strict'
 
 /** socket.ioでサーバーに接続 */
+// eslint-disable-next-line no-undef
 const socket = io()
 /** canvasオブジェクトをHTML要素から取得 */
 const canvas = $('#canvas-2d')[0]
@@ -13,12 +14,10 @@ function gameStart() {
     socket.emit('game-start', { nickname: $('#nickname').val() })
     $('#start-screen').hide()
 }
-
 $('#start-button').on('click', gameStart)
 
 /** playerの動き保存用変数 */
 let movement = {}
-
 $(document).on('keydown keyup', (event) => {
     const KeyToCommand = {
         'ArrowUp': 'forward',
@@ -86,4 +85,46 @@ socket.on('state', (players, bullets, walls) => {
 
 socket.on('dead', () => {
     $('#start-screen').show()
+})
+
+// スマホ設定
+/** touchの開始場所保存用 */
+const touches = {}
+
+/** タッチ開始した時の処理 */
+$('#canvas-2d').on('touchstart', (event) => {
+    socket.emit('shoot')
+    movement.forward = true
+
+    Array.from(event.changedTouches).forEach((touch) => {
+        touches[touch.identifier] = { pageX: touch.pageX, pageY: touch.pageY }
+    })
+    socket.emit('movement', movement)
+
+    event.preventDefault()
+})
+
+/** タッチ移動処理 */
+$('#canvas-2d').on('touchmove', (event) => {
+    movement.right = false
+    movement.left = false
+    Array.from(event.touches).forEach((touch) => {
+        const startTouch = touches[touch.identifier]
+        movement.right |= touch.pageX - startTouch.pageX > 30
+        movement.left |= touch.pageX - startTouch.pageX < -30
+    })
+    socket.emit('movement', movement)
+    event.preventDefault()
+})
+
+/** タッチ終了時の処理 */
+$('#canvas-2d').on('touchend', (event) => {
+    Array.from(event.changedTouches).forEach((touch) => {
+        delete touches[touch.identifier]
+    })
+    if (Object.keys(touches).length === 0) {
+        movement = {}
+        socket.emit('movement', movement)
+    }
+    event.preventDefault()
 })

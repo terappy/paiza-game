@@ -205,6 +205,7 @@ const bot = new BotPlayer({ nickname: 'bot' })
 players[bot.id] = bot
 
 io.on('connection', (socket) => {
+    console.log('client: ' + socket.id + ' connected')
     let player = null
 
     // ゲーム開始時の処理
@@ -224,13 +225,14 @@ io.on('connection', (socket) => {
 
     // 弾発射処理
     socket.on('shoot', () => {
-        console.log('shoot')
         if (!player || player.health === 0) { return }
         player.shoot()
     })
 
     // 通信終了処理
     socket.on('disconnect', () => {
+        console.log('client: ' + socket.id + ' disconnected')
+
         if (!player) { return }
         delete players[player.id]
         player = null

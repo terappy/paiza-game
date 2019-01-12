@@ -6,5 +6,8 @@
             4
         ],
         "space-before-function-paren": 0
+    },
+    "env": {
+        "jquery": true
     }
 }
