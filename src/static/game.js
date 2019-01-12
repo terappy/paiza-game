@@ -95,12 +95,11 @@ const touches = {}
 $('#canvas-2d').on('touchstart', (event) => {
     socket.emit('shoot')
     movement.forward = true
+    socket.emit('movement', movement)
 
     Array.from(event.changedTouches).forEach((touch) => {
         touches[touch.identifier] = { pageX: touch.pageX, pageY: touch.pageY }
     })
-    socket.emit('movement', movement)
-
     event.preventDefault()
 })
 

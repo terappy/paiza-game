@@ -162,7 +162,7 @@ class BotPlayer extends Player {
             if (!this.move(4)) {
                 this.angle = Math.random() * Math.PI * 2
             }
-            if (Math.random() < 0.3) {
+            if (Math.random() < 0.2) {
                 this.shoot()
             }
         }, 1000 / 30)
@@ -182,23 +182,27 @@ class Wall extends GameObject {
 
 }
 
+/** 壁オブジェクト群を生成する */
+function createWalls() {
+    let newWalls = {}
+    for (let i = 0; i < 3; i++) {
+        const wall = new Wall({
+            x: Math.random() * FIELD_WIDTH,
+            y: Math.random() * FIELD_HEIGHT,
+            width: 200,
+            height: 50
+        })
+        newWalls[wall.id] = wall
+    }
+    return newWalls
+}
+
 /** プレイヤー一覧 */
 let players = {}
 /** 弾一覧 */
 let bullets = {}
 /** 壁一覧 */
-let walls = {}
-
-// 壁を生成
-for (let i = 0; i < 3; i++) {
-    const wall = new Wall({
-        x: Math.random() * FIELD_WIDTH,
-        y: Math.random() * FIELD_HEIGHT,
-        width: 200,
-        height: 50
-    })
-    walls[wall.id] = wall
-}
+let walls = createWalls()
 
 // bot生成
 const bot = new BotPlayer({ nickname: 'bot' })
@@ -232,6 +236,10 @@ io.on('connection', (socket) => {
     // 通信終了処理
     socket.on('disconnect', () => {
         console.log('client: ' + socket.id + ' disconnected')
+        /** プレイヤーが全てlogoutしていれば壁を再生成する */
+        if (Object.keys(io.sockets.sockets).length === 0) {
+            walls = createWalls()
+        }
 
         if (!player) { return }
         delete players[player.id]
